@@ -1,7 +1,7 @@
 %{
 #include <stdio.h>
 #include <stdlib.h>
-#include "estrutura.c"
+#include "struct.c"
 void yyerror(char *msg);
 extern int yylex();
 %}
@@ -27,8 +27,8 @@ extern int yylex();
 %token E
 %token NE
 %token DECL
-%token OR
-%token AND
+%token OR_
+%token AND_
 %type <node> exp term factor stmt stmts assign declaration
 
 %%
@@ -52,15 +52,15 @@ declaration : var DECL exp ';' 	{
 
 assign : var '=' exp ';' 	{$$ = buildNodeStmt(ASSIGN, 2, buildNodeId($1), $3);}
 	   ;
-exp : 	'!' exp			{$$ = buildNodeStmt(NAO, 1, $2);}
-	| exp AND exp  	{$$ = buildNodeStmt(E, 2, $1, $3);}
-	| exp OR exp  	{$$ = buildNodeStmt(OU, 2, $1, $3);}
-	| exp GE exp  	{$$ = buildNodeStmt(MAIOR_IGUAL, 2, $1, $3);}
-	| exp LE exp  	{$$ = buildNodeStmt(MENOR_IGUAL, 2, $1, $3);}
-	| exp E exp  	{$$ = buildNodeStmt(IGUAL, 2, $1, $3);}
-	| exp NE exp  	{$$ = buildNodeStmt(DIFERENTE, 2, $1, $3);}
-	| exp '>' exp  		{$$ = buildNodeStmt(MAIOR, 2, $1, $3);}
-	| exp '<' exp  		{$$ = buildNodeStmt(MENOR, 2, $1, $3);}
+exp : 	'!' exp			{$$ = buildNodeStmt(NOT, 1, $2);}
+	| exp AND_ exp  	{$$ = buildNodeStmt(AND_, 2, $1, $3);}
+	| exp OR_ exp  	{$$ = buildNodeStmt(OR_, 2, $1, $3);}
+	| exp GE exp  	{$$ = buildNodeStmt(GREATER_EQUALS, 2, $1, $3);}
+	| exp LE exp  	{$$ = buildNodeStmt(LESS_EQUALS, 2, $1, $3);}
+	| exp E exp  	{$$ = buildNodeStmt(EQUALS, 2, $1, $3);}
+	| exp NE exp  	{$$ = buildNodeStmt(DIFFERENT, 2, $1, $3);}
+	| exp '>' exp  		{$$ = buildNodeStmt(GREATER, 2, $1, $3);}
+	| exp '<' exp  		{$$ = buildNodeStmt(LESS, 2, $1, $3);}
 	| exp '+' term	{$$ = buildNodeStmt(SUM, 2, $1, $3);}
 	| exp '-' term  	{$$ = buildNodeStmt(SUB, 2, $1, $3);}
 	| term 				{$$ = $1;}

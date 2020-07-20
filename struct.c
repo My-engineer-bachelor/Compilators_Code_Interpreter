@@ -2,19 +2,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
-#include "listaEncadeada.c"
-//prototipos
-	//busca da table
+#include "linkedList.c"
+
 int getValueFromTable(char c, SymbolsTable symbolsTable); 
-	//atualiza table
 void updateTable(char c, int value, SymbolsTable symbolsTable); 	
-	//verifica se variavel existe
 int varExists(char c, SymbolsTable symbolsTable);
-	//cria variavel na tabela
 void createVarInTable(char c, int value, SymbolsTable symbolsTable);
-///enums
+//enums
 enum typeNode{typeId, typeConst, typeOp};
-enum typeOperation{STMT, ASSIGN, PRINT, IF, WHILE, FOR, MULT, DIV, SUM, SUB, MAIOR, MENOR, MAIOR_IGUAL, MENOR_IGUAL, IGUAL, DIFERENTE, E, OU, NAO, DECLARATION};
+enum typeOperation{STMT, ASSIGN, PRINT, IF, WHILE, FOR, MULT, DIV, SUM, SUB, GREATER, LESS, GREATER_EQUALS, LESS_EQUALS, EQUALS, DIFFERENT, AND, OR, NOT, DECLARATION};
 //structs
 struct nodeId{
 	char id;
@@ -35,9 +31,7 @@ struct treeNode{
 		struct nodeStmt nodeStmt;
 	};
 };
-//instancias
 LinkedList *linkedList;
-//funções
 struct treeNode *buildNodeId(char var){
 	struct treeNode *node;
 	node = (struct treeNode*) malloc(sizeof(struct treeNode));
@@ -98,12 +92,12 @@ int execute(struct treeNode *node){
 				}
 				case DECLARATION:{
 					char id = node->nodeStmt.op[0]->nodeId.id;
-					//verificar se variavel existe
+					//check if variable exists
 					if (varExists(id, linkedList->last->symbolsTable)){					
 						printf("Erro: variavel %c ja foi declarada nesse escopo\n", id);
 						exit(1);							
 					}
-					//criar variavel
+					//create variable
 					createVarInTable(id, execute(node->nodeStmt.op[1]), linkedList->last->symbolsTable);
 					break;
 				}
@@ -132,51 +126,50 @@ int execute(struct treeNode *node){
 					value = execute(node->nodeStmt.op[0]) - execute(node->nodeStmt.op[1]);
 					break;
 				}
-				case MAIOR:{
+				case GREATER:{
 					value = execute(node->nodeStmt.op[0]) > execute(node->nodeStmt.op[1]);
 					break;
 				}
-				case MENOR:{
+				case LESS:{
 					value = execute(node->nodeStmt.op[0]) < execute(node->nodeStmt.op[1]);
 					break;
 				}
-				case MAIOR_IGUAL:{
+				case GREATER_EQUALS:{
 					value = execute(node->nodeStmt.op[0]) >= execute(node->nodeStmt.op[1]);
 					break;
 				}
-				case MENOR_IGUAL:{
+				case LESS_EQUALS:{
 					value = execute(node->nodeStmt.op[0]) <= execute(node->nodeStmt.op[1]);
 					break;
 				}
-				case IGUAL:{
+				case EQUALS:{
 					value = execute(node->nodeStmt.op[0]) == execute(node->nodeStmt.op[1]);
 					break;
 				}
-				case DIFERENTE:{
+				case DIFFERENT:{
 					value = execute(node->nodeStmt.op[0]) != execute(node->nodeStmt.op[1]);
 					break;
 				}
-				case E:{
+				case AND:{
 					value = execute(node->nodeStmt.op[0]) && execute(node->nodeStmt.op[1]);
 					break;
 				}
-				case OU:{
+				case OR:{
 					value = execute(node->nodeStmt.op[0]) || execute(node->nodeStmt.op[1]);
 					break;
 				}
-				case NAO:{
+				case NOT:{
 					value = !execute(node->nodeStmt.op[0]);
 					break;
 				}
 			}
  		}
 	}	
-	//apagar variaveis de escopo	
+	//remove variable from the scope
 	removeLastSymbolsTable(linkedList);
 	return value;
 }
-//implementações
-	//mapeia a-zA-Z em 0-51 na table
+//maps a-zA-Z in 0-51 table 
 int getIdentifierFromTable(char c){
 	int index = -1;
 	if(islower(c)){	
@@ -191,7 +184,7 @@ int getValueFromTable(char c, SymbolsTable symbolsTable){
 	if (symbolsTable.declaredVars[id] == 1){
 		return symbolsTable.table[getIdentifierFromTable(c)];
 	}else{
-		printf("Erro: variavel %c nao declarada\n", c);
+		printf("Error: variable %c not declared\n", c);
 		exit(1);
 	}
 }
@@ -206,7 +199,7 @@ void createVarInTable(char c, int value, SymbolsTable symbolsTable){
 		symbolsTable.declaredVars[id] = 1;
 		symbolsTable.table[id] = value;
 	}else{
-		printf("Erro: variavel %c ja foi declarada nesse escopo\n", c);
+		printf("Erro: variable %c already was declared in this scope\n", c);
 		exit(1);
 	}
 }

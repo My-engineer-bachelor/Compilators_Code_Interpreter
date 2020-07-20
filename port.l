@@ -17,8 +17,8 @@ extern void yyerror(char *msg);
 "<=" 	{return LE;}
 "==" 	{return E;}
 "!=" 	{return NE;}
-"||" 	{return OR;}
-"&&" 	{return AND;}
+"||" 	{return OR_;}
+"&&" 	{return AND_;}
 [0-9]+	{yylval.iValue = atoi(yytext); return num;}
 [a-zA-Z] {yylval.id = yytext[0]; return var;}
 [-!&|><+*/();={}:] {return yytext[0];}
